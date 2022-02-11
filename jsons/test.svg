@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:s="https://github.com/nturley/netlistsvg" width="336" height="422">
+  <style>svg {
+    stroke:#000;
+    fill:none;
+  }
+  text {
+    fill:#000;
+    stroke:none;
+    font-size:10px;
+    font-weight: bold;
+    font-family: "Courier New", monospace;
+  }
+  .nodelabel {
+    text-anchor: middle;
+  }
+  .inputPortLabel {
+    text-anchor: end;
+  }
+  .splitjoinBody {
+    fill:#000;
+  }</style>
+  <g s:type="generic" transform="translate(12,87)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$141">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$141" s:attribute="ref">NOT</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$141"/>
+  </g>
+  <g s:type="generic" transform="translate(12,110)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$142">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$142" s:attribute="ref">NOT</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$142"/>
+  </g>
+  <g s:type="generic" transform="translate(12,133)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$143">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$143" s:attribute="ref">NAND</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$143"/>
+  </g>
+  <g s:type="generic" transform="translate(12,156)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$144">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$144" s:attribute="ref">NOR</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$144"/>
+  </g>
+  <g s:type="generic" transform="translate(12,179)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$145">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$145" s:attribute="ref">NOR</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$145"/>
+  </g>
+  <g s:type="generic" transform="translate(12,202)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$146">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$146" s:attribute="ref">NAND</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$146"/>
+  </g>
+  <g s:type="generic" transform="translate(12,225)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$147">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$147" s:attribute="ref">NOT</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$147"/>
+  </g>
+  <g s:type="generic" transform="translate(12,248)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$148">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$148" s:attribute="ref">NOR</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$148"/>
+  </g>
+  <g s:type="generic" transform="translate(12,271)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$149">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$149" s:attribute="ref">NAND</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$149"/>
+  </g>
+  <g s:type="generic" transform="translate(12,294)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$150">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$150" s:attribute="ref">NAND</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$150"/>
+  </g>
+  <g s:type="generic" transform="translate(12,317)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$151">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$151" s:attribute="ref">NOR</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$151"/>
+  </g>
+  <g s:type="generic" transform="translate(12,340)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$152">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$152" s:attribute="ref">NOR</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$152"/>
+  </g>
+  <g s:type="generic" transform="translate(12,363)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$153">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$153" s:attribute="ref">NAND</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$153"/>
+  </g>
+  <g s:type="generic" transform="translate(12,386)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$154">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$154" s:attribute="ref">NAND</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$154"/>
+  </g>
+  <g s:type="generic" transform="translate(12,409)" s:width="30" s:height="40" id="cell_$abc$140$auto$blifparse.cc:381:parse_blif$155">
+    <text x="15" y="-4" class="nodelabel cell_$abc$140$auto$blifparse.cc:381:parse_blif$155" s:attribute="ref">NOR</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$abc$140$auto$blifparse.cc:381:parse_blif$155"/>
+  </g>
+  <g s:type="generic" transform="translate(180,22)" s:width="30" s:height="40" id="cell_$auto$ff.cc:262:slice$87">
+    <text x="15" y="-4" class="nodelabel cell_$auto$ff.cc:262:slice$87" s:attribute="ref">DFF</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$auto$ff.cc:262:slice$87"/>
+  </g>
+  <g s:type="generic" transform="translate(12,64)" s:width="30" s:height="40" id="cell_$auto$ff.cc:262:slice$88">
+    <text x="15" y="-4" class="nodelabel cell_$auto$ff.cc:262:slice$88" s:attribute="ref">DFF</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$auto$ff.cc:262:slice$88"/>
+  </g>
+  <g s:type="generic" transform="translate(168,64)" s:width="30" s:height="40" id="cell_$auto$ff.cc:262:slice$89">
+    <text x="15" y="-4" class="nodelabel cell_$auto$ff.cc:262:slice$89" s:attribute="ref">DFF</text>
+    <rect width="30" height="0" s:generic="body" class="cell_$auto$ff.cc:262:slice$89"/>
+  </g>
+  <g s:type="inputExt" transform="translate(12,22)" s:width="30" s:height="20" id="cell_clk">
+    <text x="15" y="-4" class="nodelabel cell_clk" s:attribute="ref">clk</text>
+    <s:alias val="$_inputExt_"/>
+    <path d="M0,0 L0,20 L15,20 L30,10 L15,0 Z" class="cell_clk"/>
+    <g s:x="28" s:y="10" s:pid="Y"/>
+  </g>
+  <g s:type="inputExt" transform="translate(54,22)" s:width="30" s:height="20" id="cell_rst">
+    <text x="15" y="-4" class="nodelabel cell_rst" s:attribute="ref">rst</text>
+    <s:alias val="$_inputExt_"/>
+    <path d="M0,0 L0,20 L15,20 L30,10 L15,0 Z" class="cell_rst"/>
+    <g s:x="28" s:y="10" s:pid="Y"/>
+  </g>
+  <g s:type="inputExt" transform="translate(96,22)" s:width="30" s:height="20" id="cell_en">
+    <text x="15" y="-4" class="nodelabel cell_en" s:attribute="ref">en</text>
+    <s:alias val="$_inputExt_"/>
+    <path d="M0,0 L0,20 L15,20 L30,10 L15,0 Z" class="cell_en"/>
+    <g s:x="28" s:y="10" s:pid="Y"/>
+  </g>
+  <g s:type="outputExt" transform="translate(138,22)" s:width="30" s:height="20" id="cell_count">
+    <text x="15" y="-4" class="nodelabel cell_count" s:attribute="ref">count</text>
+    <s:alias val="$_outputExt_"/>
+    <path d="M30,0 L30,20 L15,20 L0,10 L15,0 Z" class="cell_count"/>
+    <g s:x="0" s:y="10" s:pid="A"/>
+  </g>
+</svg>

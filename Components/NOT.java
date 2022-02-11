@@ -16,12 +16,14 @@ public class NOT implements Gate{
         this.id = id;
 
         this.a.addListener(this);
+
+        // this.y.setValueSilent(true);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.out.println("id: " + this.id + " updated");
-        this.y.setValue(!a.getValue());
+        evaluate();
+        System.out.println("Updated: " + this.id);
     }
 
     @Override
@@ -32,6 +34,11 @@ public class NOT implements Gate{
     @Override
     public boolean getValue() {
         return !a.getValue();
+    }
+
+    @Override
+    public void evaluate() {
+        this.y.setValue(getValue());
     }
     
 }

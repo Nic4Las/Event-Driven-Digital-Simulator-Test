@@ -16,6 +16,11 @@ public class Signal implements Observable {
         this.name = name;
     }
 
+    public Signal(String name, boolean value){
+        this.setValue(value);
+        this.name = name;
+    }
+
     @Override
     public void addListener(PropertyChangeListener listener) {
         listenerManager.addPropertyChangeListener(listener);
@@ -36,8 +41,17 @@ public class Signal implements Observable {
 
     public void setValue(boolean value){
         PropertyChangeEvent event = new PropertyChangeEvent(this, "value", this.value, value);
-        this.value = value;
         listenerManager.firePropertyChange(event);
+        this.value = value;
+    }
+
+    public void setValueSilent(boolean value){
+        this.value = value;
+    }
+
+    public void toggleValue(){
+        boolean newVal = !this.getValue();
+        this.setValue(newVal);
     }
     
 }

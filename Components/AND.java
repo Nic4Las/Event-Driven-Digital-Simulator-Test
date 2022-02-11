@@ -24,7 +24,14 @@ public class AND implements Gate{
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         // System.out.println("id: " + this.id + " updated");
-        this.y.setValue(a.getValue() && b.getValue());
+        evaluate();
+        System.out.println("Updated: " + this.id);
+    }
+
+    public void evaluate() {
+        // System.out.println("id: " + this.id + " updated");
+        this.y.setValue(getValue());
+        System.out.println("Updated: " + this.id);
     }
 
     @Override

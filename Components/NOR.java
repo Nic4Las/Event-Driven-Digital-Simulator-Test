@@ -19,12 +19,14 @@ public class NOR implements Gate{
 
         this.a.addListener(this);
         this.b.addListener(this);
+
+        // this.y.setValueSilent(true);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.out.println("id: " + this.id + " updated");
-        this.y.setValue(!(a.getValue() || b.getValue()));
+        evaluate();
+        System.out.println("Updated: " + this.id);
     }
 
     @Override
@@ -35,6 +37,12 @@ public class NOR implements Gate{
     @Override
     public boolean getValue() {
         return !(a.getValue() || b.getValue());
+    }
+
+    @Override
+    public void evaluate() {
+        this.y.setValue(getValue());
+        
     }
     
 }
