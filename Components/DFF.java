@@ -19,7 +19,7 @@ public class DFF implements Gate {
         this.Q = Q;
 
         C.addListener(this);
-        D.addListener(this);
+        // D.addListener(this); //Do not listen, D-FlipFlop doesn't check if clock or input, because it only needs to listen to clock
     }
 
     @Override
@@ -31,10 +31,11 @@ public class DFF implements Gate {
     }
 
     public void evaluate(){
-        if (this.state != getValue()) {
-            this.Q.setValue(getValue());
-            this.state = getValue();
-            System.out.println("Updated: " + this.id);
+        boolean tmpValue = getValue();
+        if (this.state != tmpValue) {
+            this.Q.setValue(tmpValue);
+            this.state = tmpValue;
+            // System.out.println("Updated: " + this.id);
         }
     }
 

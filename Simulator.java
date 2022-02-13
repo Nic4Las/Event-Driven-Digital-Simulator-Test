@@ -14,6 +14,8 @@ import Components.NOT;
 import Components.OR;
 import Components.Signal;
 import Components.XOR;
+import Components.GenericDualPortGate;
+import Components.GenericDualPortGate.TYPE;
 import Interfaces.Gate;
 
 public class Simulator {
@@ -23,12 +25,12 @@ public class Simulator {
         HashMap<String, Gate> gateMap = new HashMap<String, Gate>();
 
         try {
-            JsonElement jsonElement = JsonParser.parseReader(new FileReader(".\\jsons\\counter2.json"));
+            JsonElement jsonElement = JsonParser.parseReader(new FileReader(".\\jsons\\counterV3.json"));
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-            JsonObject netnames = jsonObject.get("modules").getAsJsonObject().get("up_counter").getAsJsonObject()
+            JsonObject netnames = jsonObject.get("modules").getAsJsonObject().get("counter").getAsJsonObject()
                     .get("netnames").getAsJsonObject();
-            JsonObject cells = jsonObject.get("modules").getAsJsonObject().get("up_counter").getAsJsonObject()
+            JsonObject cells = jsonObject.get("modules").getAsJsonObject().get("counter").getAsJsonObject()
                     .get("cells").getAsJsonObject();
 
             for (String netName : netnames.keySet()) {
@@ -52,7 +54,7 @@ public class Simulator {
                 }
 
                 
-                // System.out.println();
+                
 
             }
 
@@ -71,7 +73,7 @@ public class Simulator {
 
 
 
-                switch(cells.get(cellName).getAsJsonObject().get("type").getAsString()){
+                /*switch(cells.get(cellName).getAsJsonObject().get("type").getAsString()){
                     case "AND":{
                         Signal a = signalMap.get(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
                         Signal b = signalMap.get(connections.get("B").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
@@ -150,15 +152,48 @@ public class Simulator {
                         break;
                     }
                         
-                }
+                }*/
             
+                switch(cells.get(cellName).getAsJsonObject().get("type").getAsString()){
+                    case "AND":
+                    case "NAND":
+                    case "OR":
+                    case "NOR":
+                    case "XOR":
+                    case "XNOR":{
+                        Signal a = signalMap.get(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal b = signalMap.get(connections.get("B").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal y = signalMap.get(connections.get("Y").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+
+                        TYPE tmp = TYPE.valueOf(cells.get(cellName).getAsJsonObject().get("type").getAsString());
+                        gateMap.put(cellName, new GenericDualPortGate(a, b, y, tmp, cellName));
+                        break;
+                    }
+                    case "NOT":
+                        Signal a = signalMap.get(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal y = signalMap.get(connections.get("Y").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        
+                        gateMap.put(cellName, new NOT(a, y, cellName));
+                        break;
+
+                    case "DFF":
+                        Signal d = signalMap.get(connections.get("D").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal c = signalMap.get(connections.get("C").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal q = signalMap.get(connections.get("Q").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+
+                        gateMap.put(cellName, new DFF(d, c, q, cellName));
+                        break;
+                        
+                }
+
             }
 
-            for(Gate gate : gateMap.values()){
-                if(!(gate instanceof DFF)){
-                    gate.evaluate();
-                }
-            }
+            // for(Gate gate : gateMap.values()){
+            //     if(!(gate instanceof DFF)){
+            //         gate.evaluate();
+            //     }
+            // }
+            System.out.println(gateMap.values().iterator().next().getValue());
 
             System.out.println("Nr Wires: " + signalMap.size());
             System.out.println("Nr Gates: " + gateMap.size());
@@ -166,6 +201,7 @@ public class Simulator {
 
            Signal clk = signalMap.get(2);
            Signal reset = signalMap.get(3);
+        //    Signal enable = signalMap.get(4);
            Signal output_0 = signalMap.get(4);
            Signal output_1 = signalMap.get(5);
            Signal output_2 = signalMap.get(6);
@@ -173,24 +209,67 @@ public class Simulator {
 
            clk.setValue(false);
            reset.setValue(false);
+        //    enable.setValue(false);
            output_0.setValue(false);
            output_1.setValue(false);
            output_2.setValue(false);
            output_3.setValue(false);
 
+           System.out.println("Reset: true");
+           reset.setValue(true);
+           System.out.println("Clock: on");
+           clk.toggleValue();
+           System.out.println("Clock: off");
+           clk.toggleValue();
+           System.out.println("Reset: false");
+           reset.setValue(false);
+        //    enable.setValue(true);
+
            System.out.print(output_3.getValue()?1:0);
            System.out.print(output_2.getValue()?1:0);
            System.out.print(output_1.getValue()?1:0);
            System.out.print(output_0.getValue()?1:0);
            System.out.println();
 
-           clk.toggleValue();
-           clk.toggleValue();
-           System.out.print(output_3.getValue()?1:0);
-           System.out.print(output_2.getValue()?1:0);
-           System.out.print(output_1.getValue()?1:0);
-           System.out.print(output_0.getValue()?1:0);
-           System.out.println();
+        //    clk.toggleValue();
+        //    clk.toggleValue();
+        //    System.out.print(output_3.getValue()?1:0);
+        //    System.out.print(output_2.getValue()?1:0);
+        //    System.out.print(output_1.getValue()?1:0);
+        //    System.out.print(output_0.getValue()?1:0);
+        //    System.out.println();
+
+        //    clk.toggleValue();
+        //    clk.toggleValue();
+        //    System.out.print(output_3.getValue()?1:0);
+        //    System.out.print(output_2.getValue()?1:0);
+        //    System.out.print(output_1.getValue()?1:0);
+        //    System.out.print(output_0.getValue()?1:0);
+        //    System.out.println();
+        //    System.out.println(signalMap.get(3).getValue()?1:0);
+        //    System.out.println(signalMap.get(4).getValue()?1:0);
+        //    System.out.println("NOR");
+        //    System.out.println(signalMap.get(8).getValue()?1:0);
+
+
+            for(int i=0; i<32; i++) {
+                if(i==5) reset.setValue(true);
+                clk.toggleValue();
+                clk.toggleValue();
+                if(i==5) reset.setValue(false);
+                System.out.print(output_3.getValue()?1:0);
+                System.out.print(output_2.getValue()?1:0);
+                System.out.print(output_1.getValue()?1:0);
+                System.out.print(output_0.getValue()?1:0);
+                System.out.print(" -INVERT-> ");
+                System.out.print(output_3.getValue()?0:1);
+                System.out.print(output_2.getValue()?0:1);
+                System.out.print(output_1.getValue()?0:1);
+                System.out.print(output_0.getValue()?0:1);
+                System.out.println();
+            }
+
+           
 
 
 
@@ -227,6 +306,7 @@ public class Simulator {
 
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getCause());
         }
     }
 

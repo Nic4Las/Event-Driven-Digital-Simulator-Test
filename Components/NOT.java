@@ -23,7 +23,7 @@ public class NOT implements Gate{
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         evaluate();
-        System.out.println("Updated: " + this.id);
+        // System.out.println("Updated: " + this.id);
     }
 
     @Override

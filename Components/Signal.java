@@ -41,8 +41,8 @@ public class Signal implements Observable {
 
     public void setValue(boolean value){
         PropertyChangeEvent event = new PropertyChangeEvent(this, "value", this.value, value);
-        listenerManager.firePropertyChange(event);
         this.value = value;
+        listenerManager.firePropertyChange(event);
     }
 
     public void setValueSilent(boolean value){
