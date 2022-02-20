@@ -1,63 +1,192 @@
-// Signal D = new Signal("D");
-        // Signal CLK = new Signal("CLK");
-        // Signal ND = new Signal("ND");
 
-        // Signal one = new Signal("one");
-        // Signal two = new Signal("two");
+        HashMap<Integer, Signal> signalMap = new HashMap<Integer, Signal>();
+        HashMap<String, Integer> signalNamesMap = new HashMap<String, Integer>();
+        HashMap<String, Gate> gateMap = new HashMap<String, Gate>();
 
-        // Signal Q = new Signal("Q");
-        // Signal NQ = new Signal("NQ");
+        try {
+            JsonElement jsonElement = JsonParser.parseReader(new FileReader(".\\jsons\\counterV3.json"));
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-        // Gate NAND1 = new NAND(D, CLK, one, "NAND1");
-        // Gate NAND2 = new NAND(CLK, ND, two, "NAND2");
-        // Gate NAND3 = new NAND(one, NQ, Q, "NAND3");
-        // Gate NAND4 = new NAND(two, Q, NQ, "NAND4");
+            JsonObject netnames = jsonObject.get("modules").getAsJsonObject().get("counter").getAsJsonObject()
+                    .get("netnames").getAsJsonObject();
+            JsonObject cells = jsonObject.get("modules").getAsJsonObject().get("counter").getAsJsonObject()
+                    .get("cells").getAsJsonObject();
 
-        // Gate NOT = new NOT(D, ND, "NOT1");
+            for (String netName : netnames.keySet()) {
 
-        // CLK.setValue(true);
-        // CLK.setValue(false);
-        // System.out.println("Q: " + Q.getValue() + ", NQ: " + NQ.getValue());
-        // System.out.println();
+                JsonArray bits = netnames.get(netName).getAsJsonObject().get("bits").getAsJsonArray();
+
+                if(bits.size()==1){
+                    signalMap.put(bits.get(0).getAsJsonPrimitive().getAsInt(), new Signal(netName, scheduler));
+                    signalNamesMap.put(netName, bits.get(0).getAsJsonPrimitive().getAsInt());
+                } else{
+                    for (JsonElement busSignal : bits) {
+
+                        if (busSignal.getAsJsonPrimitive().isNumber()) {
+                            signalMap.put(busSignal.getAsJsonPrimitive().getAsInt(), new Signal(netName + "_" + busSignal, scheduler));
+                            signalNamesMap.put(netName + "_" + busSignal, busSignal.getAsJsonPrimitive().getAsInt());
+                        }
+    
+                    }
+                }
+
+                
+                
+
+            }
+
+            for (String cellName : cells.keySet()) {
+                JsonObject connections = cells.get(cellName).getAsJsonObject().get("connections").getAsJsonObject();
+                switch(cells.get(cellName).getAsJsonObject().get("type").getAsString()){
+                    case "AND":
+                    case "NAND":
+                    case "OR":
+                    case "NOR":
+                    case "XOR":
+                    case "XNOR":{
+                        Signal a = signalMap.get(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal b = signalMap.get(connections.get("B").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal y = signalMap.get(connections.get("Y").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+
+                        TYPE tmp = TYPE.valueOf(cells.get(cellName).getAsJsonObject().get("type").getAsString());
+                        gateMap.put(cellName, new GenericDualPortGate(a, b, y, tmp, cellName));
+                        break;
+                    }
+                    case "NOT":
+                        Signal a = signalMap.get(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal y = signalMap.get(connections.get("Y").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        
+                        gateMap.put(cellName, new NOT(a, y, cellName));
+                        break;
+
+                    case "DFF":
+                        Signal d = signalMap.get(connections.get("D").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal c = signalMap.get(connections.get("C").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+                        Signal q = signalMap.get(connections.get("Q").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
+
+                        gateMap.put(cellName, new DFF(d, c, q, cellName));
+                        break;
+                        
+                }
+
+            }
+
+            System.out.println("Nr Wires: " + signalMap.size());
+            System.out.println("Nr Gates: " + gateMap.size());
+            System.out.println();
+
+            Signal clk = signalMap.get(2);
+            Signal reset = signalMap.get(3);
+            Signal output_0 = signalMap.get(4);
+            Signal output_1 = signalMap.get(5);
+            Signal output_2 = signalMap.get(6);
+            Signal output_3 = signalMap.get(7);
+
+            for(int i=0; i<32; i++) {
+                if(i==5) reset.setValue(true);
+                clk.toggleValue();
+                clk.toggleValue();
+                if(i==5) reset.setValue(false);
+                System.out.print(output_3.getValue()?1:0);
+                System.out.print(output_2.getValue()?1:0);
+                System.out.print(output_1.getValue()?1:0);
+                System.out.print(output_0.getValue()?1:0);
+                System.out.print(" -INVERT-> ");
+                System.out.print(output_3.getValue()?0:1);
+                System.out.print(output_2.getValue()?0:1);
+                System.out.print(output_1.getValue()?0:1);
+                System.out.print(output_0.getValue()?0:1);
+                System.out.println();
+            }
+                    
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getCause());
+        }
 
 
-        // D.setValue(true);
-        // CLK.setValue(true);
-        // CLK.setValue(false);
-        // System.out.println("Q: " + Q.getValue() + ", NQ: " + NQ.getValue());
-        // System.out.println();
 
-
-        // D.setValue(false);
-        // System.out.println("Q: " + Q.getValue() + ", NQ: " + NQ.getValue());
-        // System.out.println();
-
-        // CLK.setValue(true);
-        // System.out.println("Q: " + Q.getValue() + ", NQ: " + NQ.getValue());
-        // System.out.println();
-
-        // Signal input = new Signal("input");
-        // ArrayList<Signal> signalList = new ArrayList<Signal>();
-        // ArrayList<Gate> gatelList = new ArrayList<Gate>();
-
-        // signalList.add(new Signal("x_0"));
-        // gatelList.add(new AND(input, input, signalList.get(0), "AND_0"));
-
-        // for(int i = 1; i<700; i++){
-        //     signalList.add(new Signal("x_"+i));
-        //     gatelList.add(new AND(signalList.get(i-1), input, signalList.get(i), "AND_"+i));
-        // }
-
-        // Collections.shuffle(signalList);
-        // Collections.shuffle(gatelList);
-
-        // input.setValue(false);
-        // System.out.println("Input: " + input.getValue() + ", Last: " + signalList.get(signalList.size()-1).getValue());
-
-        // long startTime = System.nanoTime();
-        // input.setValue(true);
-        // System.out.println(System.nanoTime()-startTime);
-        // System.out.println("Input: " + input.getValue() + ", Last: " + signalList.get(signalList.size()-1).getValue());
+        // Signal a = new Signal("a", scheduler);
+        // Signal b = new Signal("b", scheduler);
         
-        // input.setValue(false);
-        // System.out.println("Input: " + input.getValue() + ", Last: " + signalList.get(signalList.size()-1).getValue());
+        // Signal temp1 = new Signal("temp1", scheduler);
+        // Signal temp2 = new Signal("temp2", scheduler);
+        // Signal notA = new Signal("notA", scheduler);
+        // Signal notB = new Signal("notB", scheduler);
+        
+        // Signal y = new Signal("y", scheduler);
+
+        
+        // NOT not1 = new NOT(a, notA, "not1");
+        // NOT not2 = new NOT(b, notB, "not2");
+
+        // AND and1 = new AND(a, notB, temp1, "and1");
+        // AND and2 = new AND(notA, b, temp2, "and2");
+
+        // OR or1 = new OR(temp1, temp2, y, "or1");
+
+        // scheduler.runStep();
+        // System.out.print("a: " + (a.getValue()?"1":"0") + ", ");
+        // System.out.print("b: " + (b.getValue()?"1":"0") + ", ");
+        // System.out.print("y: " + (y.getValue()?"1":"0"));
+        // System.out.println();
+
+        
+        // b.setValue(true);
+        // scheduler.runStep();
+        // System.out.print("a: " + (a.getValue()?"1":"0") + ", ");
+        // System.out.print("b: " + (b.getValue()?"1":"0") + ", ");
+        // System.out.print("y: " + (y.getValue()?"1":"0"));
+        // System.out.println();
+
+        
+        // b.setValue(false);
+        // a.setValue(true);
+        // scheduler.runStep();
+        // System.out.print("a: " + (a.getValue()?"1":"0") + ", ");
+        // System.out.print("b: " + (b.getValue()?"1":"0") + ", ");
+        // System.out.print("y: " + (y.getValue()?"1":"0"));
+        // System.out.println();
+
+        
+        // b.setValue(true);
+        // a.setValue(true);
+        // scheduler.runStep();
+        // System.out.print("a: " + (a.getValue()?"1":"0") + ", ");
+        // System.out.print("b: " + (b.getValue()?"1":"0") + ", ");
+        // System.out.print("y: " + (y.getValue()?"1":"0"));
+        // System.out.println();
+
+
+
+
+        Signal clk = signalMap.get(2);
+            Signal reset = signalMap.get(3);
+            Signal output_0 = signalMap.get(4);
+            Signal output_1 = signalMap.get(5);
+            Signal output_2 = signalMap.get(6);
+            Signal output_3 = signalMap.get(7);            
+
+            System.out.println(clk.getValue()?1:0);
+            System.out.println(reset.getValue()?1:0);
+            System.out.println();
+
+            System.out.print(output_3.getValue()?1:0);
+            System.out.print(output_2.getValue()?1:0);
+            System.out.print(output_1.getValue()?1:0);
+            System.out.print(output_0.getValue()?1:0);
+            System.out.println();
+
+
+            for(int i=0; i<32; i++) {
+                if(i==5) reset.setValue(true);
+                clk.toggleValue();
+                clk.toggleValue();
+                if(i==5) reset.setValue(false);
+                scheduler.runStep();
+                System.out.print(output_3.getValue()?1:0);
+                System.out.print(output_2.getValue()?1:0);
+                System.out.print(output_1.getValue()?1:0);
+                System.out.print(output_0.getValue()?1:0);
+                System.out.println();
+            }

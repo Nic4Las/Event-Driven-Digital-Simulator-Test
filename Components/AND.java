@@ -25,13 +25,12 @@ public class AND implements Gate{
     public void propertyChange(PropertyChangeEvent evt) {
         // System.out.println("id: " + this.id + " updated");
         evaluate();
-        System.out.println("Updated: " + this.id);
+        //System.out.println("Updated: " + this.id);
     }
 
     public void evaluate() {
         // System.out.println("id: " + this.id + " updated");
         this.y.setValue(getValue());
-        System.out.println("Updated: " + this.id);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class AND implements Gate{
     }
 
     @Override
-    public boolean getValue() {
+    public Boolean getValue() {
         return a.getValue() && b.getValue();
     }
     

@@ -6,7 +6,7 @@ import Interfaces.Gate;
 
 public class DFF implements Gate {
 
-    private boolean state = false;
+    private Boolean state = false;
     private String id;
     private Signal D;
     private Signal C;
@@ -25,17 +25,17 @@ public class DFF implements Gate {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
-        if ((boolean) evt.getOldValue() == false && (boolean) evt.getNewValue() == true) {
+        if ((Boolean) evt.getOldValue() == false && (Boolean) evt.getNewValue() == true) {
             evaluate();
         }
     }
 
     public void evaluate(){
-        boolean tmpValue = getValue();
+        Boolean tmpValue = getValue();
         if (this.state != tmpValue) {
             this.Q.setValue(tmpValue);
             this.state = tmpValue;
-            // System.out.println("Updated: " + this.id);
+            //System.out.println("Updated: " + this.id);
         }
     }
 
@@ -45,7 +45,7 @@ public class DFF implements Gate {
     }
 
     @Override
-    public boolean getValue() {
+    public Boolean getValue() {
         return this.D.getValue();
     }
 

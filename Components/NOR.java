@@ -26,7 +26,7 @@ public class NOR implements Gate{
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         evaluate();
-        System.out.println("Updated: " + this.id);
+        //System.out.println("Updated: " + this.id);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class NOR implements Gate{
     }
 
     @Override
-    public boolean getValue() {
+    public Boolean getValue() {
         return !(a.getValue() || b.getValue());
     }
 

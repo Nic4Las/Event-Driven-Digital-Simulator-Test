@@ -1,4 +1,7 @@
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import com.google.gson.JsonArray;
@@ -14,39 +17,42 @@ import Components.NOT;
 import Components.OR;
 import Components.Signal;
 import Components.XOR;
-import Components.GenericDualPortGate;
-import Components.GenericDualPortGate.TYPE;
+import EventScheduler.EventScheduler;
 import Interfaces.Gate;
 
 public class Simulator {
     public static void main(String[] args) {
+
+        EventScheduler scheduler = new EventScheduler();
+
+        
         HashMap<Integer, Signal> signalMap = new HashMap<Integer, Signal>();
         HashMap<String, Integer> signalNamesMap = new HashMap<String, Integer>();
         HashMap<String, Gate> gateMap = new HashMap<String, Gate>();
 
         try {
-            JsonElement jsonElement = JsonParser.parseReader(new FileReader(".\\jsons\\counterV3.json"));
+            JsonElement jsonElement = JsonParser.parseReader(new FileReader(".\\jsons\\alu.json"));
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-            JsonObject netnames = jsonObject.get("modules").getAsJsonObject().get("counter").getAsJsonObject()
+            JsonObject netnames = jsonObject.get("modules").getAsJsonObject().get("alu").getAsJsonObject()
                     .get("netnames").getAsJsonObject();
-            JsonObject cells = jsonObject.get("modules").getAsJsonObject().get("counter").getAsJsonObject()
+            JsonObject cells = jsonObject.get("modules").getAsJsonObject().get("alu").getAsJsonObject()
                     .get("cells").getAsJsonObject();
 
             for (String netName : netnames.keySet()) {
-                // System.out.println("adding Signal:  " + netName);
 
                 JsonArray bits = netnames.get(netName).getAsJsonObject().get("bits").getAsJsonArray();
 
                 if(bits.size()==1){
-                    signalMap.put(bits.get(0).getAsJsonPrimitive().getAsInt(), new Signal(netName));
+                    signalMap.put(bits.get(0).getAsJsonPrimitive().getAsInt(), new Signal(netName, scheduler));
                     signalNamesMap.put(netName, bits.get(0).getAsJsonPrimitive().getAsInt());
                 } else{
                     for (JsonElement busSignal : bits) {
 
                         if (busSignal.getAsJsonPrimitive().isNumber()) {
-                            // System.out.println("bits:           " + netName + "_" + busSignal);
-                            signalMap.put(busSignal.getAsJsonPrimitive().getAsInt(), new Signal(netName + "_" + busSignal));
+                            Signal tempSignal = new Signal(netName + "_" + busSignal, scheduler);
+                            tempSignal.forceUpdate();
+                            signalMap.put(busSignal.getAsJsonPrimitive().getAsInt(), tempSignal);
                             signalNamesMap.put(netName + "_" + busSignal, busSignal.getAsJsonPrimitive().getAsInt());
                         }
     
@@ -59,21 +65,9 @@ public class Simulator {
             }
 
             for (String cellName : cells.keySet()) {
-                // System.out.println("adding Gate:        " + cellName);
-                // System.out.println("    Gate Type:      " + cells.get(cellName).getAsJsonObject().get("type"));
-
                 JsonObject connections = cells.get(cellName).getAsJsonObject().get("connections").getAsJsonObject();
-
-                // System.out.println(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-                // System.out.println(connections.get("B").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-                // System.out.println(connections.get("Y").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-
-                // System.out.println();
-                // break;
-
-
-
-                /*switch(cells.get(cellName).getAsJsonObject().get("type").getAsString()){
+                
+                switch(cells.get(cellName).getAsJsonObject().get("type").getAsString()){
                     case "AND":{
                         Signal a = signalMap.get(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
                         Signal b = signalMap.get(connections.get("B").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
@@ -152,162 +146,119 @@ public class Simulator {
                         break;
                     }
                         
-                }*/
-            
-                switch(cells.get(cellName).getAsJsonObject().get("type").getAsString()){
-                    case "AND":
-                    case "NAND":
-                    case "OR":
-                    case "NOR":
-                    case "XOR":
-                    case "XNOR":{
-                        Signal a = signalMap.get(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-                        Signal b = signalMap.get(connections.get("B").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-                        Signal y = signalMap.get(connections.get("Y").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-
-                        TYPE tmp = TYPE.valueOf(cells.get(cellName).getAsJsonObject().get("type").getAsString());
-                        gateMap.put(cellName, new GenericDualPortGate(a, b, y, tmp, cellName));
-                        break;
-                    }
-                    case "NOT":
-                        Signal a = signalMap.get(connections.get("A").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-                        Signal y = signalMap.get(connections.get("Y").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-                        
-                        gateMap.put(cellName, new NOT(a, y, cellName));
-                        break;
-
-                    case "DFF":
-                        Signal d = signalMap.get(connections.get("D").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-                        Signal c = signalMap.get(connections.get("C").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-                        Signal q = signalMap.get(connections.get("Q").getAsJsonArray().get(0).getAsJsonPrimitive().getAsInt());
-
-                        gateMap.put(cellName, new DFF(d, c, q, cellName));
-                        break;
-                        
                 }
 
             }
-
-            // for(Gate gate : gateMap.values()){
-            //     if(!(gate instanceof DFF)){
-            //         gate.evaluate();
-            //     }
-            // }
-            System.out.println(gateMap.values().iterator().next().getValue());
 
             System.out.println("Nr Wires: " + signalMap.size());
             System.out.println("Nr Gates: " + gateMap.size());
             System.out.println();
 
-           Signal clk = signalMap.get(2);
-           Signal reset = signalMap.get(3);
-        //    Signal enable = signalMap.get(4);
-           Signal output_0 = signalMap.get(4);
-           Signal output_1 = signalMap.get(5);
-           Signal output_2 = signalMap.get(6);
-           Signal output_3 = signalMap.get(7);
+            ArrayList<Integer> AIndexes = new ArrayList<Integer>(Arrays.asList(2, 3, 4, 5, 6, 7, 8, 9));
+            ArrayList<Integer> BIndexes = new ArrayList<Integer>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 17));
+            ArrayList<Integer> ALU_SelIndexes = new ArrayList<Integer>(Arrays.asList(18, 19, 20, 21));
+            ArrayList<Integer> ALU_OutIndexes = new ArrayList<Integer>(Arrays.asList(22, 23, 24, 25, 26, 27, 28, 29));
 
-           clk.setValue(false);
-           reset.setValue(false);
-        //    enable.setValue(false);
-           output_0.setValue(false);
-           output_1.setValue(false);
-           output_2.setValue(false);
-           output_3.setValue(false);
-
-           System.out.println("Reset: true");
-           reset.setValue(true);
-           System.out.println("Clock: on");
-           clk.toggleValue();
-           System.out.println("Clock: off");
-           clk.toggleValue();
-           System.out.println("Reset: false");
-           reset.setValue(false);
-        //    enable.setValue(true);
-
-           System.out.print(output_3.getValue()?1:0);
-           System.out.print(output_2.getValue()?1:0);
-           System.out.print(output_1.getValue()?1:0);
-           System.out.print(output_0.getValue()?1:0);
-           System.out.println();
-
-        //    clk.toggleValue();
-        //    clk.toggleValue();
-        //    System.out.print(output_3.getValue()?1:0);
-        //    System.out.print(output_2.getValue()?1:0);
-        //    System.out.print(output_1.getValue()?1:0);
-        //    System.out.print(output_0.getValue()?1:0);
-        //    System.out.println();
-
-        //    clk.toggleValue();
-        //    clk.toggleValue();
-        //    System.out.print(output_3.getValue()?1:0);
-        //    System.out.print(output_2.getValue()?1:0);
-        //    System.out.print(output_1.getValue()?1:0);
-        //    System.out.print(output_0.getValue()?1:0);
-        //    System.out.println();
-        //    System.out.println(signalMap.get(3).getValue()?1:0);
-        //    System.out.println(signalMap.get(4).getValue()?1:0);
-        //    System.out.println("NOR");
-        //    System.out.println(signalMap.get(8).getValue()?1:0);
+            ArrayList<Signal> A = generateBusByIndexes(AIndexes, signalMap);
+            ArrayList<Signal> B = generateBusByIndexes(BIndexes, signalMap);
+            ArrayList<Signal> ALU_Sel = generateBusByIndexes(ALU_SelIndexes, signalMap);
+            ArrayList<Signal> ALU_Out = generateBusByIndexes(ALU_OutIndexes, signalMap);
+            Signal CarryOut = signalMap.get(30);
 
 
-            for(int i=0; i<32; i++) {
-                if(i==5) reset.setValue(true);
-                clk.toggleValue();
-                clk.toggleValue();
-                if(i==5) reset.setValue(false);
-                System.out.print(output_3.getValue()?1:0);
-                System.out.print(output_2.getValue()?1:0);
-                System.out.print(output_1.getValue()?1:0);
-                System.out.print(output_0.getValue()?1:0);
-                System.out.print(" -INVERT-> ");
-                System.out.print(output_3.getValue()?0:1);
-                System.out.print(output_2.getValue()?0:1);
-                System.out.print(output_1.getValue()?0:1);
-                System.out.print(output_0.getValue()?0:1);
-                System.out.println();
-            }
+            scheduler.runStep();
+            setBusInt(0, A);
+            scheduler.runStep();
+            setBusInt(0, B);
+            scheduler.runStep();
+            setBusInt(0b0000, ALU_Sel);
+            scheduler.runStep();
 
-           
-
-
-
-
-
-            // Signal clk = signalMap.get(2);
-            // Signal rst = signalMap.get(3);
-            // Signal en = signalMap.get(4);
-            // Signal count_0 = signalMap.get(5);
-            // Signal count_1 = signalMap.get(6);
-            // Signal count_2 = signalMap.get(7);
-            // Signal count_3 = signalMap.get(8);
-
-            // en.setValue(false);
-            // rst.setValue(false);
-            // en.setValue(false);
-            // count_0.setValue(false);
-            // count_1.setValue(false);
-            // count_2.setValue(false);
-            // count_3.setValue(false);
+            scheduler.runStep();
+            printBusBin(ALU_Out);
+            scheduler.runStep();
+            setBusInt(5, A);
+            scheduler.runStep();
+            setBusInt(1, B);
+            scheduler.runStep();
+            printBusBin(A);
+            printBusBin(B);
+            scheduler.runStep();
+            printBusBin(ALU_Out);
+            scheduler.runStep();
+            printBusBin(ALU_Out);
+            scheduler.runStep();
+            printBusBin(ALU_Out);
+            scheduler.runStep();
+            printBusBin(ALU_Out);
+            scheduler.runStep();
+            printBusBin(ALU_Out);
+            scheduler.runStep();
+            printBusBin(ALU_Out);
+            scheduler.runStep();
+            printBusBin(ALU_Out);
 
 
-            // en.setValue(true);
-            // clk.setValue(true);
-            // clk.setValue(false);
-            // clk.setValue(true);
-            // clk.setValue(false);
+            // setBusInt(0, A);
+            // setBusInt(0, B);
+            // setBusInt(0b0000, ALU_Sel);
 
-            // System.out.print(count_3.getValue()?1:0);
-            // System.out.print(count_2.getValue()?1:0);
-            // System.out.print(count_1.getValue()?1:0);
-            // System.out.print(count_0.getValue()?1:0);
-            // System.out.println();
+            // printBusBin(A);
+            // printBusBin(B);
+            // printBusBin(ALU_Out);
+            // printBusBin(ALU_Sel);
+
+            // scheduler.runStep();
+
+            // printBusBin(ALU_Out);
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getCause());
         }
+        
+        
     }
 
-}
+    public static ArrayList<Signal> generateBusByIndexes(ArrayList<Integer> indexes, HashMap<Integer, Signal> signals){
+        ArrayList<Signal> bus = new ArrayList<Signal>();
+        for (Integer index:indexes) {
+            bus.add(signals.get(index));
+        }
+        return bus;
+    }
+
+    public static void printBusBin(ArrayList<Signal> bus){
+        String text = "";
+        for (Signal signal : bus) {
+            text += signal.getValue()?"1":"0";
+        }
+        System.out.println(text);
+    }
+
+    public static void printBusInt(ArrayList<Signal> bus){
+        String text = "";
+        for (Signal signal : bus) {
+            text += signal.getValue()?"1":"0";
+        }
+        System.out.println(Integer.parseInt(text, 2));
+    }
+
+    public static void printBusHex(ArrayList<Signal> bus){
+        String text = "";
+        for (Signal signal : bus) {
+            text += signal.getValue()?"1":"0";
+        }
+        System.out.println(String.format("%0"+bus.size()+"x", Integer.parseInt(text, 2)));
+    }
+
+    public static void setBusInt(Integer value, ArrayList<Signal> bus){
+        Collections.reverse(bus);
+        for (int i = 0; i < bus.size(); i++) {
+            bus.get(i).setValue((value & (1 << i)) != 0);
+        }
+        Collections.reverse(bus);
+    }
+
+    
+} 
