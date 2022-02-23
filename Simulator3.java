@@ -17,7 +17,7 @@ import Components.Signal;
 import EventScheduler.EventScheduler;
 import Interfaces.Gate;
 
-public class Simulator {
+public class Simulator3 {
     public static void main(String[] args) {
 
         EventScheduler scheduler = new EventScheduler();
@@ -27,12 +27,12 @@ public class Simulator {
         HashMap<String, Gate> gateMap = new HashMap<String, Gate>();
 
         try {
-            JsonElement jsonElement = JsonParser.parseReader(new FileReader(".\\jsons\\alu.json"));
+            JsonElement jsonElement = JsonParser.parseReader(new FileReader(".\\jsons\\parallel_to_serial.json"));
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-            JsonObject netnames = jsonObject.get("modules").getAsJsonObject().get("alu").getAsJsonObject()
+            JsonObject netnames = jsonObject.get("modules").getAsJsonObject().get("parallel_to_serial").getAsJsonObject()
                     .get("netnames").getAsJsonObject();
-            JsonObject cells = jsonObject.get("modules").getAsJsonObject().get("alu").getAsJsonObject()
+            JsonObject cells = jsonObject.get("modules").getAsJsonObject().get("parallel_to_serial").getAsJsonObject()
                     .get("cells").getAsJsonObject();
 
             for (String netName : netnames.keySet()) {
@@ -105,80 +105,108 @@ public class Simulator {
             System.out.println("Nr Gates: " + gateMap.size());
             System.out.println();
 
-            ArrayList<Integer> AIndexes = new ArrayList<Integer>(Arrays.asList(2, 3, 4, 5, 6, 7, 8, 9));
-            ArrayList<Integer> BIndexes = new ArrayList<Integer>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 17));
-            ArrayList<Integer> ALU_SelIndexes = new ArrayList<Integer>(Arrays.asList(18, 19, 20, 21));
-            ArrayList<Integer> ALU_OutIndexes = new ArrayList<Integer>(Arrays.asList(22, 23, 24, 25, 26, 27, 28, 29));
+            ArrayList<Integer> data_inIndexes = new ArrayList<Integer>(Arrays.asList(4, 5, 6, 7, 8, 9, 10, 11));
+            Collections.reverse(data_inIndexes);
 
-            Collections.reverse(AIndexes);
-            Collections.reverse(BIndexes);
-            Collections.reverse(ALU_SelIndexes);
-            Collections.reverse(ALU_OutIndexes);
+            ArrayList<Signal> data_in = generateBusByIndexes(data_inIndexes, signalMap);
+            Signal clk = signalMap.get(2);
+            Signal reset = signalMap.get(3);
+            Signal empty_tick = signalMap.get(12);
+            Signal data_out = signalMap.get(13);
 
-            ArrayList<Signal> A = generateBusByIndexes(AIndexes, signalMap);
-            ArrayList<Signal> B = generateBusByIndexes(BIndexes, signalMap);
-            ArrayList<Signal> ALU_Sel = generateBusByIndexes(ALU_SelIndexes, signalMap);
-            ArrayList<Signal> ALU_Out = generateBusByIndexes(ALU_OutIndexes, signalMap);
-            Signal CarryOut = signalMap.get(30);
-
-
-            setBusInt(23, A);
-            setBusInt(72, B);
-            setBusInt(0b0000, ALU_Sel);
-
-            System.out.println("inital values:");
-            System.out.print("Instruction: ");
-            printBusBin(ALU_Sel);
-            printBusInt(ALU_Sel);
-            System.out.print("A: ");
-            printBusBin(A);
-            printBusInt(A);
-            System.out.print("B: ");
-            printBusBin(B);
-            printBusInt(B);
-            System.out.print("Out: ");
-            printBusBin(ALU_Out);
-            printBusInt(ALU_Out);
-            System.out.println();
-
-            scheduler.runStep();
-
-            System.out.println("addition values:");
-            System.out.print("Instruction: ");
-            printBusBin(ALU_Sel);
-            printBusInt(ALU_Sel);
-            System.out.print("A: ");
-            printBusBin(A);
-            printBusInt(A);
-            System.out.print("B: ");
-            printBusBin(B);
-            printBusInt(B);
-            System.out.print("Out: ");
-            printBusBin(ALU_Out);
-            printBusInt(ALU_Out);
+            System.out.print("data_in: ");
+            printBusBin(data_in);
+            System.out.print("clk: ");
+            System.out.println(clk.getValue()? "1" : "0");
+            System.out.print("reset: ");
+            System.out.println(reset.getValue()? "1" : "0");
+            System.out.print("empty_tick: ");
+            System.out.println(empty_tick.getValue()? "1" : "0");
+            System.out.print("data_out: ");
+            System.out.println(data_out.getValue()? "1" : "0");
             System.out.println();
 
 
-            setBusInt(27, A);
-            setBusInt(4, B);
-            setBusInt(0b0111, ALU_Sel);
+            setBusInt(43, data_in);
+            reset.setValue(true);
             scheduler.runStep();
-            scheduler.runStep();
-
-            System.out.println("Rotate right values:");
-            System.out.print("Instruction: ");
-            printBusBin(ALU_Sel);
-            printBusInt(ALU_Sel);
-            System.out.print("A: ");
-            printBusBin(A);
-            printBusInt(A);
-            System.out.print("B: ");
-            printBusBin(B);
-            printBusInt(B);
-            System.out.print("Out: ");
-            printBusBin(ALU_Out);
-            printBusInt(ALU_Out);
+            System.out.print("data_in: ");
+            printBusBin(data_in);
+            System.out.print("clk: ");
+            System.out.println(clk.getValue()? "1" : "0");
+            System.out.print("reset: ");
+            System.out.println(reset.getValue()? "1" : "0");
+            System.out.print("empty_tick: ");
+            System.out.println(empty_tick.getValue()? "1" : "0");
+            System.out.print("data_out: ");
+            System.out.println(data_out.getValue()? "1" : "0");
             System.out.println();
+
+
+            clk.toggleValue();
+            scheduler.runStep();
+            System.out.print("data_in: ");
+            printBusBin(data_in);
+            System.out.print("clk: ");
+            System.out.println(clk.getValue()? "1" : "0");
+            System.out.print("reset: ");
+            System.out.println(reset.getValue()? "1" : "0");
+            System.out.print("empty_tick: ");
+            System.out.println(empty_tick.getValue()? "1" : "0");
+            System.out.print("data_out: ");
+            System.out.println(data_out.getValue()? "1" : "0");
+            System.out.println();
+
+
+            clk.toggleValue();
+            scheduler.runStep();
+            System.out.print("data_in: ");
+            printBusBin(data_in);
+            System.out.print("clk: ");
+            System.out.println(clk.getValue()? "1" : "0");
+            System.out.print("reset: ");
+            System.out.println(reset.getValue()? "1" : "0");
+            System.out.print("empty_tick: ");
+            System.out.println(empty_tick.getValue()? "1" : "0");
+            System.out.print("data_out: ");
+            System.out.println(data_out.getValue()? "1" : "0");
+            System.out.println();
+
+
+            clk.toggleValue();
+            reset.setValue(false);
+            scheduler.runStep();
+            System.out.print("data_in: ");
+            printBusBin(data_in);
+            System.out.print("clk: ");
+            System.out.println(clk.getValue()? "1" : "0");
+            System.out.print("reset: ");
+            System.out.println(reset.getValue()? "1" : "0");
+            System.out.print("empty_tick: ");
+            System.out.println(empty_tick.getValue()? "1" : "0");
+            System.out.print("data_out: ");
+            System.out.println(data_out.getValue()? "1" : "0");
+            System.out.println();
+
+
+            for(int i = 0; i<=20; i++){
+                clk.toggleValue();
+                scheduler.runStep();
+                System.out.println("step: " + i);
+                System.out.print("data_in: ");
+                printBusBin(data_in);
+                System.out.print("clk: ");
+                System.out.println(clk.getValue()? "1" : "0");
+                System.out.print("reset: ");
+                System.out.println(reset.getValue()? "1" : "0");
+                System.out.print("empty_tick: ");
+                System.out.println(empty_tick.getValue()? "1" : "0");
+                System.out.print("data_out: ");
+                System.out.println(data_out.getValue()? "1" : "0");
+                System.out.println();
+            }
+
+            
 
 
 
@@ -186,43 +214,42 @@ public class Simulator {
             e.printStackTrace();
             System.out.println(e.getCause());
         }
-        
-        
+
     }
 
-    public static ArrayList<Signal> generateBusByIndexes(ArrayList<Integer> indexes, HashMap<Integer, Signal> signals){
+    public static ArrayList<Signal> generateBusByIndexes(ArrayList<Integer> indexes, HashMap<Integer, Signal> signals) {
         ArrayList<Signal> bus = new ArrayList<Signal>();
-        for (Integer index:indexes) {
+        for (Integer index : indexes) {
             bus.add(signals.get(index));
         }
         return bus;
     }
 
-    public static void printBusBin(ArrayList<Signal> bus){
+    public static void printBusBin(ArrayList<Signal> bus) {
         String text = "";
         for (Signal signal : bus) {
-            text += signal.getValue()?"1":"0";
+            text += signal.getValue() ? "1" : "0";
         }
         System.out.println(text);
     }
 
-    public static void printBusInt(ArrayList<Signal> bus){
+    public static void printBusInt(ArrayList<Signal> bus) {
         String text = "";
         for (Signal signal : bus) {
-            text += signal.getValue()?"1":"0";
+            text += signal.getValue() ? "1" : "0";
         }
         System.out.println(Integer.parseInt(text, 2));
     }
 
-    public static void printBusHex(ArrayList<Signal> bus){
+    public static void printBusHex(ArrayList<Signal> bus) {
         String text = "";
         for (Signal signal : bus) {
-            text += signal.getValue()?"1":"0";
+            text += signal.getValue() ? "1" : "0";
         }
-        System.out.println(String.format("%0"+bus.size()+"x", Integer.parseInt(text, 2)));
+        System.out.println(String.format("%0" + bus.size() + "x", Integer.parseInt(text, 2)));
     }
 
-    public static void setBusInt(Integer value, ArrayList<Signal> bus){
+    public static void setBusInt(Integer value, ArrayList<Signal> bus) {
         Collections.reverse(bus);
         for (int i = 0; i < bus.size(); i++) {
             bus.get(i).setValue((value & (1 << i)) != 0);
@@ -230,5 +257,4 @@ public class Simulator {
         Collections.reverse(bus);
     }
 
-    
-} 
+}
