@@ -1,6 +1,7 @@
 package Components;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.function.BiFunction;
 
 import Interfaces.Gate;
@@ -44,7 +45,6 @@ public class GenericDualPortGate implements Gate {
         return this.id;
     }
 
-    @Override
     public Boolean getValue() {
         return function.apply(a.getValue(), b.getValue());
     }
@@ -62,5 +62,20 @@ public class GenericDualPortGate implements Gate {
         TYPE(BiFunction<Boolean,Boolean,Boolean> fn) {
             this.fn = fn;
         }
+    }
+
+    @Override
+    public ArrayList<Signal> getInputSignals() {
+        ArrayList<Signal> list = new ArrayList<Signal>();
+        list.add(a);
+        list.add(b);
+        return list;
+    }
+
+    @Override
+    public ArrayList<Signal> getOutputSignals() {
+        ArrayList<Signal> list = new ArrayList<Signal>();
+        list.add(y);
+        return list;
     }
 }

@@ -1,6 +1,7 @@
 package Components;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 
 import Interfaces.Gate;
 
@@ -34,7 +35,6 @@ public class NOR implements Gate{
         return this.id;
     }
 
-    @Override
     public Boolean getValue() {
         return !(a.getValue() || b.getValue());
     }
@@ -43,6 +43,21 @@ public class NOR implements Gate{
     public void evaluate() {
         this.y.setValue(getValue());
         
+    }
+
+    @Override
+    public ArrayList<Signal> getInputSignals() {
+        ArrayList<Signal> list = new ArrayList<Signal>();
+        list.add(a);
+        list.add(b);
+        return list;
+    }
+
+    @Override
+    public ArrayList<Signal> getOutputSignals() {
+        ArrayList<Signal> list = new ArrayList<Signal>();
+        list.add(y);
+        return list;
     }
     
 }

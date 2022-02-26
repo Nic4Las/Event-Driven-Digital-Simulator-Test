@@ -1,6 +1,7 @@
 package Components;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 
 import Interfaces.Gate;
 
@@ -44,9 +45,23 @@ public class DFF implements Gate {
         return this.id;
     }
 
-    @Override
     public Boolean getValue() {
         return this.D.getValue();
+    }
+
+    @Override
+    public ArrayList<Signal> getInputSignals() {
+        ArrayList<Signal> list = new ArrayList<Signal>();
+        list.add(D);
+        list.add(C);
+        return list;
+    }
+
+    @Override
+    public ArrayList<Signal> getOutputSignals() {
+        ArrayList<Signal> list = new ArrayList<Signal>();
+        list.add(Q);
+        return list;
     }
 
 }
